@@ -32,6 +32,9 @@ License: according to [LICENSE](https://github.com/PX4/Firmware/blob/master/LICE
     - [px4io/px4-dev-nuttx-noble](https://hub.docker.com/r/px4io/px4-dev-nuttx-noble) [![](https://images.microbadger.com/badges/image/px4io/px4-dev-nuttx-noble.svg)](http://microbadger.com/images/px4io/px4-dev-nuttx-noble) [![Docker Pulls](https://img.shields.io/docker/pulls/px4io/px4-dev-nuttx-noble.svg)](https://hub.docker.com/r/px4io/px4-dev-nuttx-noble)
 - [px4io/px4-dev-armhf](https://hub.docker.com/r/px4io/px4-dev-armhf) [![](https://images.microbadger.com/badges/image/px4io/px4-dev-armhf.svg)](http://microbadger.com/images/px4io/px4-dev-armhf) [![Docker Pulls](https://img.shields.io/docker/pulls/px4io/px4-dev-armhf.svg)](https://hub.docker.com/r/px4io/px4-dev-armhf)
 - [px4io/px4-dev-aarch64](https://hub.docker.com/r/px4io/px4-dev-aarch64) [![](https://images.microbadger.com/badges/image/px4io/px4-dev-aarch64.svg)](http://microbadger.com/images/px4io/px4-dev-aarch64) [![Docker Pulls](https://img.shields.io/docker/pulls/px4io/px4-dev-aarch64.svg)](https://hub.docker.com/r/px4io/px4-dev-aarch64)
+- [px4io/px4-dev-base-sign](https://hub.docker.com/r/px4io/px4-dev-base-sign) [![](https://images.microbadger.com/badges/image/px4io/px4-dev-base-sign.svg)](http://microbadger.com/images/px4io/px4-dev-base-sign) [![Docker Pulls](https://img.shields.io/docker/pulls/px4io/px4-dev-base-sign.svg)](https://hub.docker.com/r/px4io/px4-dev-base-sign)
+    - [px4io/px4-dev-simulation-sign](https://hub.docker.com/r/px4io/px4-dev-simulation-sign) [![](https://images.microbadger.com/badges/image/px4io/px4-dev-simulation-sign.svg)](http://microbadger.com/images/px4io/px4-dev-simulation-sign) [![Docker Pulls](https://img.shields.io/docker/pulls/px4io/px4-dev-simulation-sign.svg)](https://hub.docker.com/r/px4io/px4-dev-simulation-sign)
+
 - [px4io/px4-docs](https://hub.docker.com/r/px4io/px4-docs) [![](https://images.microbadger.com/badges/image/px4io/px4-docs.svg)](http://microbadger.com/images/px4io/px4-docs) [![Docker Pulls](https://img.shields.io/docker/pulls/px4io/px4-docs.svg)](https://hub.docker.com/r/px4io/px4-docs)
 
 
@@ -45,21 +48,60 @@ docker run -it --rm \
     -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
     -e DISPLAY=${DISPLAY} \
     -e LOCAL_USER_ID="$(id -u)" \
-    --name=container_name px4io/px4-dev-simulation-bionic /bin/bash
+    --name=container_name px4io/px4-dev-simulation-sign /bin/bash
 ```
 
 Or use [docker_run.sh](https://github.com/PX4/Firmware/blob/master/Tools/docker_run.sh).
+
+### Running Sign Scheme
+Allow graphical access to the container
+```sh
+xhost +local:docker  
+```
+
+To run the Sign Scheme environment inside a PX4 container, use the following command:
+```sh
+docker run -it --privileged --user root \
+    -v ./PX4-Autopilot:/home/docker_user/PX4-Autopilot:rw \
+    -v ./sign_scheme:/home/docker_user/sign_scheme:rw \
+    --network host \
+    --name px4-sign \
+    px4io/px4-dev-simulation-sign:latest bash
+
+```
+
+After starting the container, execute the following steps:
+
+```sh
+cd sign_scheme/
+./compile.sh
+
+cd /home/docker_user
+mkdir log
+mkdir key
+cd /home/docker_user/key
+openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+
+
+cd /home/docker_user/PX4-Autopilot
+git config --global --add safe.directory /home/docker_user/PX4-Autopilot
+git submodule update --init --recursive
+
+
+HEADLESS=1 make px4_sitl jmavsim
+```
 
 ## Building
 
 ```
 cd docker
-docker build -t px4io/px4-dev-ros-melodic -f Dockerfile_ros-melodic .
+docker build -t px4io/px4-dev-simulation-sign -f Dockerfile_simulation-sign .
 ```
 
 or:
 
 ```
 cd docker
-make px4-dev-ros-melodic
+make px4-dev-simulation-sign
 ```

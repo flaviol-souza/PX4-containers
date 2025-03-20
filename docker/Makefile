@@ -1,17 +1,17 @@
 .PHONY: px4-dev-armhf, px4-dev-base-archlinux, px4-dev-base-bionic, \
-		px4-dev-base-focal, px4-dev-base-jammy, px4-dev-base-noble, px4-dev-clang, px4-dev-nuttx-bionic, \
+		px4-dev-base-focal, px4-dev-base-jammy, px4-dev-base-noble, px4-dev-clang, px4-dev-nuttx-bionic, px4-dev-base-sign, \
 		px4-dev-nuttx-focal, px4-dev-nuttx-jammy, px4-dev-nuttx-noble, px4-dev-nuttx-clang, px4-dev-raspi, \
 		px4-dev-ros-melodic, px4-dev-ros-noetic, px4-dev-ros2-dashing, \
 		px4-dev-ros2-eloquent, px4-dev-ros2-foxy, px4-dev-ros2-galactic, \
-		px4-dev-ros2-rolling, px4-dev-simulation-bionic, px4-dev-simulation-focal, \
+		px4-dev-ros2-rolling, px4-dev-simulation-bionic, px4-dev-simulation-focal, px4-dev-simulation-sign, \
 		px4-docs
 
 all: px4-dev-armhf, px4-dev-base-archlinux, px4-dev-base-bionic, \
-		px4-dev-base-focal, px4-dev-base-jammy, px4-dev-base-noble, px4-dev-clang, px4-dev-nuttx-bionic, \
+		px4-dev-base-focal, px4-dev-base-jammy, px4-dev-base-noble, px4-dev-clang, px4-dev-nuttx-bionic, px4-dev-base-sign, \
 		px4-dev-nuttx-focal, px4-dev-nuttx-jammy, px4-dev-nuttx-noble, px4-dev-nuttx-clang, px4-dev-raspi, \
 		px4-dev-ros-melodic, px4-dev-ros-noetic, px4-dev-ros2-dashing,\
 		px4-dev-ros2-eloquent, px4-dev-ros2-foxy, px4-dev-ros2-galactic, \
-		px4-dev-ros2-rolling, px4-dev-simulation-bionic, px4-dev-simulation-focal, \
+		px4-dev-ros2-rolling, px4-dev-simulation-bionic, px4-dev-simulation-focal, px4-dev-simulation-sign, \
 		px4-docs
 
 px4-dev-armhf:
@@ -28,6 +28,9 @@ px4-dev-base-bionic:
 
 px4-dev-base-focal:
 	docker build -t px4io/px4-dev-base-focal . -f Dockerfile_base-focal
+
+px4-dev-base-sign:
+	docker build -t px4io/px4-dev-base-sign . -f Dockerfile_base-sign
 
 px4-dev-base-jammy:
 	docker build -t px4io/px4-dev-base-jammy . -f Dockerfile_base-jammy
@@ -85,6 +88,9 @@ px4-dev-simulation-bionic: px4-dev-base-bionic
 
 px4-dev-simulation-focal: px4-dev-base-focal
 	docker build -t px4io/px4-dev-simulation-focal . -f Dockerfile_simulation-focal
+
+px4-dev-simulation-sign: px4-dev-base-sign
+	docker build -t px4io/px4-dev-simulation-sign . -f Dockerfile_simulation-sign
 
 px4-docs:
 	docker build -t px4io/px4-dev-docs . -f Dockerfile_docs
