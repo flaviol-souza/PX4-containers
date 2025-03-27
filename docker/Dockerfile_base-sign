@@ -53,22 +53,20 @@ RUN apt-get update && apt-get -y --quiet --no-install-recommends install \
 	&& rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
 
 # gtest
-RUN cd /usr/src/gtest \
-	&& mkdir build && cd build \
-	&& cmake .. && make -j$(nproc) \
-	&& find . -name \*.a -exec cp {} /usr/lib \; \
-	&& cd .. && rm -rf build
+#RUN cd /usr/src/gtest \
+#	&& mkdir build && cd build \
+#	&& cmake .. && make -j$(nproc) \
+#	&& cp *.a /usr/lib \
+#	&& cd .. && rm -rf build
 
 # Install Python 3 pip build dependencies first.
-RUN python3 -m pip install --upgrade pip wheel setuptools
+RUN pip3 install wheel setuptools
 
 # Python 3 dependencies installed by pip
-RUN python3 -m pip install --upgrade "numpy<2"
+RUN pip3 install argparse argcomplete coverage cerberus empy==3.3.4 jinja2 kconfiglib \
+		matplotlib==3.0.* numpy nunavut>=1.1.0 packaging pkgconfig pyros-genmsg pyulog \
+		pyyaml requests serial six toml psutil pyulog wheel jsonschema
 
-RUN python3 -m pip install argparse argcomplete coverage cerberus empy==3.3.4 jinja2 kconfiglib \
-		matplotlib==3.0.* nunavut>=1.1.0 packaging pkgconfig pyros-genmsg pyulog \
-		pyyaml requests serial six toml psutil pyulog wheel jsonschema pynacl
-		
 # manual ccache setup
 RUN ln -s /usr/bin/ccache /usr/lib/ccache/cc \
 	&& ln -s /usr/bin/ccache /usr/lib/ccache/c++

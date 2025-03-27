@@ -38,6 +38,12 @@ ENV QT_X11_NO_MITSHM 1
 # Use UTF8 encoding in java tools (needed to compile jMAVSim)
 ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 
+RUN mkdir -p /home/docker_user/key/
+RUN mkdir -p /home/docker_user/key/log/
+
+COPY sign_scheme /home/docker_user/sign_scheme 
+COPY PX4-Autopilot /home/docker_user/PX4-Autopilot
+
 #sign scheme variables
 ENV SIGN_SCHEME=NO-SIGN
 ENV SECRET_KEY_PATH=/home/docker_user/key/private_key.pem
@@ -48,3 +54,6 @@ ENV APP_NAME=PX4
 # Install JSBSim
 RUN wget https://github.com/JSBSim-Team/jsbsim/releases/download/v1.1.1a/JSBSim-devel_1.1.1-134.focal.amd64.deb
 RUN dpkg -i JSBSim-devel_1.1.1-134.focal.amd64.deb
+
+# Update Java
+RUN apt install openjdk-17-jdk -y
